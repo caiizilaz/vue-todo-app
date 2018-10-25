@@ -3,42 +3,19 @@
     <sui-container>
       <sui-header size="huge" text-align="center">Todo App</sui-header>
       <sui-divider section />
-      <sui-grid :columns="2">
-        <sui-grid-row>
-          <sui-grid-column text-align="right">
-            <sui-input v-model="todoInput" placeholder="Memo here" @keyup.enter="handleAddTodo" />
-          </sui-grid-column>
-          <sui-grid-column text-align="left">
-            <sui-button primary @click="handleAddTodo">Add</sui-button>
-          </sui-grid-column>
-        </sui-grid-row>
-      </sui-grid>
-      <sui-container text-align="center">
-        <sui-list class="filter" bulleted horizontal>
-          <a is="sui-list-item" @click="criteria = 'All'">All</a>
-          <a is="sui-list-item" @click="criteria = 'Todo'">Todo</a>
-          <a is="sui-list-item" @click="criteria = 'Done'">Done</a>
-        </sui-list>
-      </sui-container>
-      <sui-list text-align="left">
-        <sui-list-item v-for="todo in filterTodo"
-          :key="todo.id"
-          @click="toggleTodo(todo.id)">
-          <sui-list-icon v-if="todo.isDone" name="check circle" color="green" />
-          <sui-list-icon v-else name="circle notch" color="orange" />
-          <sui-list-content>
-            <a is="sui-list-header">
-              {{todo.task}}
-            </a>
-          </sui-list-content>
-        </sui-list-item>
-      </sui-list>
+      <InputTodo :handleAddTodo="handleAddTodo" :todoInput="todoInput" @input="todoInput = $event" />
+      <FilterTodo v-model="criteria" />
+      <ListTodo :toggleTodo="toggleTodo" :filterTodo="filterTodo" />
     </sui-container>
   </div>
 </template>
 
 <script>
 import { mapState, mapActions, mapGetters } from 'vuex'
+import InputTodo from '../components/Todo/Input'
+import FilterTodo from '../components/Todo/Filter'
+import ListTodo from '../components/Todo/List'
+
 export default {
   computed: {
     ...mapState({
@@ -67,10 +44,12 @@ export default {
       'addTodo',
     ]),
     handleAddTodo: async function () {
-      await this.$store.dispatch('todo/addTodo', {
-        task: this.todoInput
-      })
-      this.todoInput = ''
+      if (this.todoInput) {
+        await this.$store.dispatch('todo/addTodo', {
+          task: this.todoInput
+        })
+        this.todoInput = ''
+      }
     },
     toggleTodo: function (id) {
       this.$store.dispatch('todo/toggleTodo', {
@@ -78,13 +57,11 @@ export default {
       })
     },
   },
+  components: {
+    InputTodo,
+    FilterTodo,
+    ListTodo,
+  },
 }
 
 </script>
-
-<style lang="stylus" scoped>
-  .filter
-    font-size 20px
-    font-weight bold
-    margin-top 25px !important
-</style>

@@ -21,7 +21,11 @@ const getters = {
 // actions
 const actions = {
   getAllTodoList ({ commit }) {
-    const todoMock = { id: 1, task: 'test mock todo', isDone: false }
+    const todoMock = [
+      { id: 1, task: 'test mock todo', isDone: true },
+      { id: 2, task: 'drink some coffee', isDone: false },
+      { id: 3, task: 'eat a banana', isDone: true },
+    ]
     const isAdded = state.todoList.find(todo => todo.id === 1)
     if (!isAdded) commit('setTodoListMock', todoMock)
   },
@@ -36,7 +40,7 @@ const actions = {
 // mutations
 const mutations = {
   setTodoListMock (state, todoMock) {
-    state.todoList.push(todoMock)
+    state.todoList = todoMock
   },
   toggleTodo (state, id) {
     const res = state.todoList.find(todo => todo.id === id)
